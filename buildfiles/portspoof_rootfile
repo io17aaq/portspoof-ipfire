@@ -1,0 +1,15 @@
+etc/portspoof
+var/log/portspoof.log
+etc/portspoof/portspoof.conf
+etc/portspoof/portspoof_signatures
+#etc/portspoof/extra_files
+etc/portspoof/extra_files/cmd_exec.txt
+etc/portspoof/extra_files/fuzz_nmap_signatures
+etc/portspoof/extra_files/fuzz_payloads
+etc/portspoof/extra_files/XSS.txt
+etc/rc.d/init.d/portspoof
+etc/rc.d/rc0.d/K75portspoof
+etc/rc.d/rc3.d/S55portspoof
+etc/rc.d/rc6.d/K75portspoof
+usr/bin/portspoof
+etc/logrotate.d/portspoof
