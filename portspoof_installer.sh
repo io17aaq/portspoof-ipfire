@@ -28,6 +28,16 @@ ROTATE="/etc/logrotate.d/portspoof";
 PACKAGESUM="2e05c8920b18179317c2f9a27c177e806b11a8e7a093792127f84681cef7a319";
 PACKAGESUMA="d104b9adca9a619d7ed8b7a7f64d1b4ccd446ec8472f02c9c340b8a915d8231e";
 
+# Formatting and Colors
+COLUMNS="$(tput cols)";
+R=$(tput setaf 1);
+G=$(tput setaf 2);
+B=$(tput setaf 6);
+b=$(tput bold);
+N=$(tput sgr0);
+seperatorA(){ printf -v _hr "%*s" ${COLUMNS} && echo ${_hr// /${1-_}}; }
+seperatorB(){ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -; }
+
 # Platform check
 TYPE=$(uname -m | tail -c 3)
 
@@ -56,8 +66,8 @@ down_funct() {
     CHECK=$(sha256sum ${PACKAGE} | awk '{print $1}');
     if [[ "${CHECK}" = "${PACKAGESUM}" ]]; then
       echo;
-      echo -e "SHA2 sum should be \033[1;32m${PACKAGESUM}\033[0m";
-      echo -e "SHA2 sum is        \033[1;32m${CHECK}\033[0m and is correct… ";
+      echo -e "SHA2 sum should be ${B}${PACKAGESUM}${N}";
+      echo -e "SHA2 sum is        ${G}${CHECK}${N} and is correct… ";
       echo;
       echo "will go to further processing :-) ...";
       echo;
@@ -69,8 +79,8 @@ down_funct() {
       rm -f /etc/portspoof.conf /etc/portspoof_signatures;
     else
       echo;
-      echo -e "SHA2 sum should be \033[1;32m${PACKAGESUM}\033[0m";
-      echo -e "SHA2 sum is        \033[1;32m${CHECK}\033[0m and is not correct… ";
+      echo -e "SHA2 sum should be ${B}${PACKAGESUM}${N}";
+      echo -e "SHA2 sum is        ${R}${CHECK}${N} and is not correct… ";
       echo;
       echo -e "\033[1;31mShit happens :-( the SHA2 sum is incorrect, please report this here\033[0m";
       echo "--> https://forum.ipfire.org/viewtopic.php?f=41&t=12399";
@@ -88,8 +98,8 @@ down_funct() {
     CHECK=$(sha256sum ${PACKAGEA} | awk '{print $1}');
     if [[ "${CHECK}" = "${PACKAGESUMA}" ]]; then
       echo;
-      echo -e "SHA2 sum should be \033[1;32m${PACKAGESUMA}\033[0m";
-      echo -e "SHA2 sum is        \033[1;32m${CHECK}\033[0m and is correct… ";
+      echo -e "SHA2 sum should be ${B}${PACKAGESUMA}${N}";
+      echo -e "SHA2 sum is        ${G}${CHECK}${N} and is correct… ";
       echo;
       echo "will go to further processing :-) ...";
       echo;
@@ -101,8 +111,8 @@ down_funct() {
       rm -f /etc/portspoof.conf /etc/portspoof_signatures;
     else
       echo;
-      echo -e "SHA2 sum should be \033[1;32m${PACKAGESUMA}\033[0m";
-      echo -e "SHA2 sum is        \033[1;32m${CHECK}\033[0m and is not correct… ";
+      echo -e "SHA2 sum should be ${B}${PACKAGESUMA}${N}";
+      echo -e "SHA2 sum is        ${R}{CHECK}${N} and is not correct… ";
       echo;
       echo -e "\033[1;31mShit happens :-( the SHA2 sum is incorrect, please report this here\033[0m";
       echo "--> https://forum.ipfire.org/viewtopic.php?f=41&t=12399";
@@ -114,19 +124,19 @@ down_funct() {
 
 state_funct() {
   clear;
-  echo -e "\033[1;36m Portspoofs 'list of open files':\033[0m";
+  echo -e "${B}Portspoofs 'list of open files':${N}";
   lsof | grep portspoof;
   echo;
-  echo -e "\033[1;36m Portspoofs 'progress state':\033[0m";
+  echo -e "${B}Portspoofs 'progress state':${N}";
   ps aux | grep portspoof | grep daemon;
   echo;
-  echo -e "\033[1;36m Portspoofs 'netstat':\033[0m";
+  echo -e "${B}Portspoofs 'netstat':${N}";
   netstat -tlpn | grep portspoof | tail -1;
   echo;
-  echo -e "\033[1;36m Overview of changed 'CUSTOMINPUT' chain:\033[0m";
+  echo -e "${B}Overview of changed 'CUSTOMINPUT' chain:${N}";
   iptables -n -vL CUSTOMINPUT;
   echo;
-  echo -e "\033[1;36m Overview of changed 'CUSTOMPREROUTING' chain:\033[0m";
+  echo -e "${B}Overview of changed 'CUSTOMPREROUTING' chain:${N}";
   iptables -t nat -n -vL CUSTOMPREROUTING;
   echo;
   /etc/init.d/portspoof status;
@@ -138,24 +148,24 @@ state_funct() {
 while true; do
   # Choose installation
   clear;
-  echo "+------------------------------------------------------------------------+              ";
-  echo "|              Welcome to Portspoof on IPFire installation               |              ";
-  echo "+------------------------------------------------------------------------+              ";
+  echo "+------------------------------------------------------------------------+";
+  echo "|              Welcome to Portspoof on IPFire installation               |";
+  echo "+------------------------------------------------------------------------+";
   echo;
-  echo -e "       If you want to install Portspoof press      \033[1;36m'i'\033[0m and [ENTER] ";
-  echo -e "       If you want to configure Portspoof press    \033[1;36m'c'\033[0m and [ENTER] ";
-  echo -e "       If you want to uninstall Portspoof press    \033[1;36m'u'\033[0m and [ENTER] ";
-  echo;
-  echo  "+-----------------------------------------------------------------------+";
-  echo;
-  echo -e "       To check Portspoofs state press             \033[1;36m'p'\033[0m and [ENTER] ";
-  echo -e "       To check Portspoofs logs press              \033[1;36m'l'\033[0m and [ENTER] ";
-  echo -e "       To start Portspoof press                    \033[1;36m's'\033[0m and [ENTER] ";
-  echo -e "       To stop Portspoofs press                    \033[1;36m'd'\033[0m and [ENTER] ";
-  echo -e "       To check the firewall.local entries press   \033[1;36m'f'\033[0m and [ENTER] ";
+  echo -e "       If you want to install Portspoof press      ${B}${b}'i'${N} and [ENTER]";
+  echo -e "       If you want to configure Portspoof press    ${B}${b}'c'${N} and [ENTER]";
+  echo -e "       If you want to uninstall Portspoof press    ${B}${b}'u'${N} and [ENTER]";
   echo;
   echo  "+-----------------------------------------------------------------------+";
-  echo -e "       If you want to quit this installation press \033[1;36m'q'\033[0m and [ENTER] ";
+  echo;
+  echo -e "       To check Portspoofs state press             ${B}${b}'p'${N} and [ENTER]";
+  echo -e "       To check Portspoofs logs press              ${B}${b}'l'${N} and [ENTER]";
+  echo -e "       To start Portspoof press                    ${B}${b}'s'${N} and [ENTER]";
+  echo -e "       To stop Portspoofs press                    ${B}${b}'d'${N} and [ENTER]";
+  echo -e "       To check the firewall.local entries press   ${B}${b}'f'${N} and [ENTER]";
+  echo;
+  echo  "+-----------------------------------------------------------------------+";
+  echo -e "       If you want to quit this installation press ${B}${b}'q'${N} and [ENTER]";
   echo  "+-----------------------------------------------------------------------+";
   echo;
   read -r choice
@@ -177,13 +187,17 @@ while true; do
       touch ${META};
       # Integration of firewall rules
       clear;
-      echo "There are two possibilities to integrate the needed firewall rules for Portspoof, ";
+      seperatorA;
       echo;
-      echo "a) The first one integrates the FW rules over the initscript, where the initscript excludes automatically used services from the NAT and INPUT chains or, "
+      echo "There are two possibilities to integrate the needed firewall rules for Portspoof:"
+      seperatorB;
       echo;
-      echo "b) The second one will copy only an example_firewall.local file to '/tmp'. The firewall configuration needs in that case done by your own."
+      echo -e "${R}A)${N} ${B}Integrates the FW rules over the initscript automatically";
+      echo -e "${R}B)${N} ${B}Copy an example_firewall.local file to '/tmp'. The firewall configuration needs to be done by your own.${N}"
+      seperatorB;
       echo;
-      read -p "If you want to set the FW rules into the initscript press 'a' . if you want to have an example under /tmp press '"b"': " what
+      printf "%b" "For automatic FW detection press ${R}'A'${N} - For an example under /tmp press ${R}'B'${N}: ";
+      read what;
       echo;
       case "$what" in
         a*|A*)
@@ -398,11 +412,17 @@ esac
 # End $rc_base/init.d/portspoof
 
 EOF
-
+        clear;
+        seperatorA;
         echo;
         echo "Please check the existing Portspoof initscript if you chose the FW integration.";
+        seperatorB;
         echo;
-        echo "You can change Portspoofs behavior under '${INIT}'. The installer provides also a possibility for this";
+        echo -e "${B}You can change Portspoofs behavior under ${R}'${INIT}'${N}." 
+        echo -e "${B}The installer provides also a configuration possibility over point 'c'${N}";
+        echo;
+        seperatorB;
+        echo;
         read -p "For further processing press [ENTER]... "
       ;;
 
@@ -471,8 +491,12 @@ EOF
       echo "Installation is finish now. You can find an reduced installer.log under /tmp... ";
       echo;
       clear;
-      echo "You can start also your Portspoof configuration over the configuration menu from this installer, ";
-      echo "or use '/etc/init.d/portspoof start' ";
+      seperatorA;
+      echo;
+      echo "You can start Portspoof over the configuration menu from this installer, ";
+      seperatorB;
+      echo -e "${B}but you can use also an '/etc/init.d/portspoof start' over the command line${N}";
+      seperatorA;
       echo;
       read -p "To finish now the installation press [ENTER]. Enjoy your testings.";
       # Install logrotate.d again until package update cause the package version uses wrong path
@@ -504,9 +528,14 @@ EOF
       clear;
       # Configure portspoof.conf
       if [[ -e "${CONF}" ]]; then
-        echo "The configuration in this installer uses the editor vim... ";
+        seperatorA;
         echo;
-        read -p "if you´d like to configure portspoof.conf press 'a' and [ENTER], to skip it press '"b"' and [ENTER]... " what
+        echo -e "${B}The configuration in this installer uses the editor vim... ${N}";
+        seperatorB;
+        echo;
+        printf "%b" "if you´d like to configure portspoof.conf press ${R}'A'${N}[ENTER] - For an example under /tmp press ${R}'B'${N}[ENTER]: ";
+        echo
+        read what;
         case "$what" in
           a*|A*)
             vim ${CONF}/portspoof.conf;
@@ -523,9 +552,13 @@ EOF
       # Configure start parameters and firewall rules
       if [[ -e "${INIT}" ]]; then
         clear;
-        echo "All Portspoof starting parameters are defined in the Portspoof initscript, ";
+        seperatorA;
         echo;
-        read -p "if you´d like to change them press 'a' and [ENTER], to skip it press '"b"' and [ENTER]... " what
+        echo -e "${B}All Portspoof starting parameters are defined in the Portspoof initscript${N}";
+        seperatorB;
+        echo;
+        printf "%b" "if you´d like to configure portspoof.conf press ${R}'A'${N}[ENTER] - to skip it press ${R}'B'${N}[ENTER]: ";
+        read what;
         case "$what" in
           a*|A*)
             /etc/init.d/portspoof stop;
@@ -546,7 +579,7 @@ EOF
       fi
       echo "Configuration is done... ";
       echo;
-      echo "If you got some problems, come to https://forum.ipfire.org/viewtopic.php?f=41&t=12399 will try then to help you... ";
+      echo -e "${R}If you got some problems, come to https://forum.ipfire.org/viewtopic.php?f=41&t=12399 will try then to help you... ${N}";
       echo;
       echo "Goodbye";
       echo;
@@ -586,7 +619,7 @@ EOF
         echo;
         read -p "To go back to installer menu press [ENTER]... ";
       else
-        echo "Portspoof is already running... ";
+        echo -e "${R}Portspoof is already running... ${N}";
         sleep 2;
       fi
     ;;
@@ -594,7 +627,7 @@ EOF
     # Stopping portspoof
     d*|D*)
       if [ -z "$(pidof portspoof)" ]; then
-        echo "Portspoof is already stopped... ";
+        echo -e "${R}Portspoof is already stopped... ${N}";
         sleep 2;
       else
         /etc/init.d/portspoof stop;
@@ -618,7 +651,8 @@ EOF
         read -p "To uninstall the Portspoof installation press [ENTER] , to quit use [CTRL-c]... ";
         del_funct 2>&1 | tee /tmp/portspoof_uninstaller.log;
         echo;
-        echo "Portspoof has been uninstalled, the uninstaller is finished now. You can find also an uninstaller.log under /tmp..."
+        echo -e "${B}Portspoof has been uninstalled, the uninstaller is finished now. You can find also an uninstaller.log under /tmp...${N}"
+        echo;
         echo "Thanks for testing.";
         echo;
         echo "Goodbye."
@@ -644,25 +678,25 @@ EOF
     # Installer usage explanation
     *)
       echo;
-      echo "   Ooops, there went something wrong 8-\ - for explanation again       ";
-      echo "+-----------------------------------------------------------------------+          ";
-      echo "|            Welcome to Portspoof on IPFire installation                |          ";
-      echo "+-----------------------------------------------------------------------+          ";
+      echo -e "     ${R}Ooops, there went something wrong 8-\ - for explanation again${N}";
+      echo "+-----------------------------------------------------------------------+";
+      echo "|            Welcome to Portspoof on IPFire installation                |";
+      echo "+-----------------------------------------------------------------------+";
       echo;
-      echo -e "       If you want to install Portspoof press      \033[1;36m'i'\033[0m and [ENTER] ";
-      echo -e "       If you want to configure Portspoof press    \033[1;36m'c'\033[0m and [ENTER] ";
-      echo -e "       If you want to uninstall Portspoof press    \033[1;36m'u'\033[0m and [ENTER] ";
-      echo;
-      echo    "+-----------------------------------------------------------------------+";
-      echo;
-      echo -e "       To check Portspoofs state press             \033[1;36m'p'\033[0m and [ENTER] ";
-      echo -e "       To check Portspoofs logs press              \033[1;36m'l'\033[0m and [ENTER] ";
-      echo -e "       To start Portspoof press                    \033[1;36m's'\033[0m and [ENTER] ";
-      echo -e "       To stop Portspoofs press                    \033[1;36m'd'\033[0m and [ENTER] ";
-      echo -e "       To check the firewall.local entries press   \033[1;36m'f'\033[0m and [ENTER] ";
+      echo -e "       If you want to install Portspoof press      ${B}${b}'i'${N} and [ENTER]";
+      echo -e "       If you want to configure Portspoof press    ${B}${b}'c'${N} and [ENTER]";
+      echo -e "       If you want to uninstall Portspoof press    ${B}${b}'u'${N} and [ENTER]";
       echo;
       echo    "+-----------------------------------------------------------------------+";
-      echo -e "       If you want to quit this installation press \033[1;36m'q'\033[0m and [ENTER] ";
+      echo;
+      echo -e "       To check Portspoofs state press             ${B}${b}'p'${N} and [ENTER]";
+      echo -e "       To check Portspoofs logs press              ${B}${b}'l'${N} and [ENTER]";
+      echo -e "       To start Portspoof press                    ${B}${b}'s'${N} and [ENTER]";
+      echo -e "       To stop Portspoofs press                    ${B}${b}'d'${N} and [ENTER]";
+      echo -e "       To check the firewall.local entries press   ${B}${b}'f'${N} and [ENTER]";
+      echo;
+      echo    "+-----------------------------------------------------------------------+";
+      echo -e "       If you want to quit this installation press ${B}${b}'q'${N} and [ENTER]";
       echo    "+-----------------------------------------------------------------------+";
       echo;
       read -p " To start the installer again press [ENTER] , to quit use [CTRL-c]";
