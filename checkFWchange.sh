@@ -11,7 +11,7 @@
 ## Locations
 # Bin location
 INIT="/etc/init.d/portspoof";
-INITCHECK="206"
+INITCHECK="210"
 IPTABLES="/sbin/iptables";
 # File location
 SHAFILE="/etc/portspoof/.fwshachecksum";
