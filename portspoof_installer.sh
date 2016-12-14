@@ -557,7 +557,7 @@ EOF
         echo -e "${B}All Portspoof starting parameters are defined in the Portspoof initscript${N}";
         seperatorB;
         echo;
-        printf "%b" "if you´d like to configure portspoof.conf press ${R}'A'${N}[ENTER] - to skip it press ${R}'B'${N}[ENTER]: ";
+        printf "%b" "if you´d like to configure Portspoofs initscript press ${R}'A'${N}[ENTER] - to skip it press ${R}'B'${N}[ENTER]: ";
         read what;
         case "$what" in
           a*|A*)
