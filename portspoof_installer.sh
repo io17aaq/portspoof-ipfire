@@ -14,7 +14,9 @@
 # Package, URL and installation directory
 PACKAGE="portspoof-1.3-4.ipfire";
 PACKAGEA="portspoof_arm-1.3-4.tar.gz";
+PACKAGEB="portspoof-1.2-2_64bit.ipfire";
 URL="http://people.ipfire.org/~ummeegge/portspoof/portspoof-1.3%2b";
+URLB="http://people.ipfire.org/~ummeegge/portspoof/64bit";
 INSTDIR="/opt/pakfire/tmp";
 LOGDIR="/var/log/portspoof";
 LOG="${LOGDIR}/portspoof.log"
@@ -27,6 +29,7 @@ ROTATE="/etc/logrotate.d/portspoof";
 # SHA256 sums
 PACKAGESUM="2e05c8920b18179317c2f9a27c177e806b11a8e7a093792127f84681cef7a319";
 PACKAGESUMA="d104b9adca9a619d7ed8b7a7f64d1b4ccd446ec8472f02c9c340b8a915d8231e";
+PACKAGESUMB="5954ce7ec7a3d8d821ff0f95a2d08f14dafc0f2d89304ba671c6b3e3443f652f";
 
 # Formatting and Colors
 COLUMNS="$(tput cols)";
@@ -80,6 +83,38 @@ down_funct() {
     else
       echo;
       echo -e "SHA2 sum should be ${B}${PACKAGESUM}${N}";
+      echo -e "SHA2 sum is        ${R}${CHECK}${N} and is not correct… ";
+      echo;
+      echo -e "\033[1;31mShit happens :-( the SHA2 sum is incorrect, please report this here\033[0m";
+      echo "--> https://forum.ipfire.org/viewtopic.php?f=41&t=12399";
+      echo;
+      exit 1;
+    fi
+  elif [[ ${TYPE} = "64" ]]; then
+    cd /tmp || exit;
+    # Check if package is already presant otherwise download it
+    if [[ ! -e "${PACKAGEB}" ]]; then
+      echo;
+      curl -O ${URLB}/${PACKAGEB};
+    fi
+    # X86 package check
+    CHECK=$(sha256sum ${PACKAGEB} | awk '{print $1}');
+    if [[ "${CHECK}" = "${PACKAGESUMB}" ]]; then
+      echo;
+      echo -e "SHA2 sum should be ${B}${PACKAGESUMB}${N}";
+      echo -e "SHA2 sum is        ${G}${CHECK}${N} and is correct… ";
+      echo;
+      echo "will go for further processing :-) ...";
+      echo;
+      sleep 3;
+      cp -vf ${PACKAGEB} ${INSTDIR};
+      cd ${INSTDIR} || exit 1;
+      tar xvf ${PACKAGEB};
+      ./install.sh 2>&1 | tee /tmp/portspoof_installer.log;
+      rm -f /etc/portspoof.conf /etc/portspoof_signatures;
+    else
+      echo;
+      echo -e "SHA2 sum should be ${B}${PACKAGESUMB}${N}";
       echo -e "SHA2 sum is        ${R}${CHECK}${N} and is not correct… ";
       echo;
       echo -e "\033[1;31mShit happens :-( the SHA2 sum is incorrect, please report this here\033[0m";
@@ -148,6 +183,7 @@ state_funct() {
 while true; do
   # Choose installation
   clear;
+  echo "${N}";
   echo "+------------------------------------------------------------------------+";
   echo "|              Welcome to Portspoof on IPFire installation               |";
   echo "+------------------------------------------------------------------------+";
