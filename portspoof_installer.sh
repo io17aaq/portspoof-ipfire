@@ -15,8 +15,8 @@
 PACKAGE="portspoof-1.3-4.ipfire";
 PACKAGEA="portspoof_arm-1.3-4.tar.gz";
 PACKAGEB="portspoof-1.2-2_64bit.ipfire";
-URL="http://people.ipfire.org/~ummeegge/portspoof/portspoof-1.3%2b";
-URLB="http://people.ipfire.org/~ummeegge/portspoof/64bit";
+URL="https://people.ipfire.org/~ummeegge/portspoof/portspoof-1.3%2b";
+URLB="https://people.ipfire.org/~ummeegge/portspoof/64bit";
 INSTDIR="/opt/pakfire/tmp";
 LOGDIR="/var/log/portspoof";
 LOG="${LOGDIR}/portspoof.log"
