@@ -553,7 +553,7 @@ EOF
         create 0640 daemon daemon
         sharedscripts
         postrotate
-   if [ -n "$(pidof portspoof) ]; then
+   if [ -n "$(pidof portspoof)" ]; then
             /etc/init.d/portspoof restart > /dev/null
         fi
         endscript
